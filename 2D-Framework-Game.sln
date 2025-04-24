@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35312.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2D-Framework-Game", "2D-Framework-Game\2D-Framework-Game.csproj", "{FA45DECF-BC04-422D-8748-3D0C478393CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameTestApp", "GameTestApp\GameTestApp.csproj", "{1FA7647D-D126-4127-844B-705DD0D6457F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FA45DECF-BC04-422D-8748-3D0C478393CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA45DECF-BC04-422D-8748-3D0C478393CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA45DECF-BC04-422D-8748-3D0C478393CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA45DECF-BC04-422D-8748-3D0C478393CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FA7647D-D126-4127-844B-705DD0D6457F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FA7647D-D126-4127-844B-705DD0D6457F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FA7647D-D126-4127-844B-705DD0D6457F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FA7647D-D126-4127-844B-705DD0D6457F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C98A51D3-1BF7-4F7E-BE0E-3C4EA8F6990E}
+	EndGlobalSection
+EndGlobal
