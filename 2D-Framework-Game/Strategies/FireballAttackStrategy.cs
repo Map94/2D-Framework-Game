@@ -8,7 +8,8 @@ namespace _2D_Framework_Game.Strategies
     {
         public int ExecuteAttack(List<IAttackComponent> components)
         {
-            return 35; // Fireball attack deals 35 damage
+            // Fireball always deals 35 damage (can be modified to account for additional factors like spell level, etc.)
+            return 35;
         }
     }
 }

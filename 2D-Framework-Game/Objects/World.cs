@@ -1,35 +1,45 @@
-﻿using _2D_Framework_Game.Objects.Creatures;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
+using _2D_Framework_Game.Objects.Creatures;
 
-namespace _2D_Framework_Game.Objects
+namespace _2D_Framework_Game.Objects.World
 {
     public class World
     {
-        private readonly List<Creature> creatures = new();
-        private readonly List<WorldObject> objects = new();
+        public List<Creature> Creatures { get; set; }
 
-        public World(int width, int height)
+        public World()
         {
-            // Initialization of the world (size, etc.)
+            Creatures = new List<Creature>();
         }
 
+        // Add creatures to the world
         public void AddCreature(Creature creature)
         {
-            creatures.Add(creature);
-            // Remove redundant logging here:
-            // Trace.WriteLine($"Creature {creature.Name} added at position ({creature.X}, {creature.Y})");
-            // Add the creature to the world, log only once with HP:
-            Trace.WriteLine($"Creature {creature.Name} added at position ({creature.X}, {creature.Y}) with {creature.HitPoints} HP");
+            Creatures.Add(creature);
         }
 
-        public void AddObject(WorldObject obj)
+        // Show weak creatures (HP < 50)
+        public void ShowWeakCreatures()
         {
-            objects.Add(obj);
-            Trace.WriteLine($"Object {obj.Name} added to world");
+            var weakCreatures = Creatures.Where(c => c.HitPoints < 50).ToList();
+            Console.WriteLine("Weak Creatures (HP < 50):");
+            foreach (var creature in weakCreatures)
+            {
+                Console.WriteLine($"{creature.Name} has {creature.HitPoints} HP.");
+            }
         }
 
-        // Other methods like AddItem, etc.
+        // Show strong creatures (HP > 100)
+        public void ShowStrongCreatures()
+        {
+            var strongCreatures = Creatures.Where(c => c.HitPoints > 100).ToList();
+            Console.WriteLine("Strong Creatures (HP > 100):");
+            foreach (var creature in strongCreatures)
+            {
+                Console.WriteLine($"{creature.Name} has {creature.HitPoints} HP.");
+            }
+        }
     }
 }

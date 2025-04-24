@@ -8,7 +8,8 @@ namespace _2D_Framework_Game.Strategies
     {
         public int ExecuteAttack(List<IAttackComponent> components)
         {
-            return 20; // Melee attack deals 20 damage
+            // Melee attack deals 20 damage (this can be dynamic if creature stats or items are factored in)
+            return 20;
         }
     }
 }

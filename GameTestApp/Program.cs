@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
 using _2D_Framework_Game.Objects;
 using _2D_Framework_Game.Objects.Creatures;
 using _2D_Framework_Game.Objects.Attack;
-using _2D_Framework_Game.Objects.SubCreature;  // Add this to recognize Mage and Warrior
+using _2D_Framework_Game.Objects.SubCreature;  // Ensure this line is here for Mage and Warrior
+using _2D_Framework_Game.Objects.World;  // Add this line to fix the World class not found error
 using _2D_Framework_Game.Utilities;
+using System.Diagnostics;
 
 namespace GameTestApp
 {
@@ -12,18 +13,18 @@ namespace GameTestApp
     {
         static void Main(string[] args)
         {
+            // Setup logging
             LoggingConfig.Configure();
 
-            var world = new World(10, 10);
+            // Create a world instance (make sure the World class is correctly implemented)
+            var world = new World(10, 10);  // World size 10x10
 
             // Create creatures
-            Mage mage = new("Merlin", 80, 1, 1, 2);
-            Warrior warrior = new("Conan", 120, 2, 2, 2);
+            Mage mage = new("Merlin", 80, 1, 1);  // Adjusted to match the Creature constructor
+            Warrior warrior = new("Conan", 120, 2, 2);  // Adjusted to match the Creature constructor
 
-            // Add creatures to the world
             world.AddCreature(mage);
             world.AddCreature(warrior);
-
 
             // Create attack items
             BasicAttackItem fireball = new("Fireball", 25, 5);
@@ -36,7 +37,7 @@ namespace GameTestApp
             comboWeapon.AddComponent(sword);
             comboWeapon.AddComponent(axe);
 
-            // Add attack items to world
+            // Add to world
             world.AddObject(fireball);
             world.AddObject(sword);
             world.AddObject(axe);
