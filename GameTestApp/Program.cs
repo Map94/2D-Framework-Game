@@ -1,65 +1,138 @@
 ﻿using System;
-using _2D_Framework_Game.Objects;
-using _2D_Framework_Game.Objects.Creatures;
+using System.IO;
+using System.Collections.Generic;
+using _2D_Framework_Game.Objects.SubCreature;
 using _2D_Framework_Game.Objects.Attack;
-using _2D_Framework_Game.Objects.SubCreature;  // Ensure this line is here for Mage and Warrior
-using _2D_Framework_Game.Objects.World;  // Add this line to fix the World class not found error
-using _2D_Framework_Game.Utilities;
-using System.Diagnostics;
+using _2D_Framework_Game.Objects.Defence;
+using _2D_Framework_Game.Objects;
+using _2D_Framework_Game.Strategies;
+using System.Text;
 
 namespace GameTestApp
 {
-    internal class Program
+    class Program
     {
         static void Main(string[] args)
         {
-            // Setup logging
-            LoggingConfig.Configure();
+            // Setup logging to file and console
+            string logPath = "gamelog.txt";
+            if (File.Exists(logPath)) File.Delete(logPath);
 
-            // Create a world instance (make sure the World class is correctly implemented)
-            var world = new World(10, 10);  // World size 10x10
+            var writer = new StreamWriter(logPath) { AutoFlush = true };
+            var console = Console.Out;
+            var multiWriter = new MultiTextWriter(console, writer);
+            Console.SetOut(multiWriter);
 
-            // Create creatures
-            Mage mage = new("Merlin", 80, 1, 1);  // Adjusted to match the Creature constructor
-            Warrior warrior = new("Conan", 120, 2, 2);  // Adjusted to match the Creature constructor
+            Console.WriteLine("--- Game Start ---\n");
+
+            // Create world
+            var world = new World(10, 10);
+
+            // Create subcreatures
+            Mage mage = new Mage("Merlin", 1, 1, 80, 2);
+            Warrior warrior = new Warrior("Conan", 2, 2, 120, 2);
+
+            Console.WriteLine($"{mage.Name} spawned at ({mage.X}, {mage.Y}) with {mage.HitPoints} HP");
+            Console.WriteLine($"{warrior.Name} spawned at ({warrior.X}, {warrior.Y}) with {warrior.HitPoints} HP\n");
 
             world.AddCreature(mage);
             world.AddCreature(warrior);
 
-            // Create attack items
-            BasicAttackItem fireball = new("Fireball", 25, 5);
-            BoostedAttackItem boostedFireball = new(fireball, 10, "Boosted Fireball", true, true);
-            BasicAttackItem sword = new("Sword", 20, 2);
-            BasicAttackItem axe = new("Axe", 30, 1);
+            // Create weapons
+            BasicAttackItem fireball = new BasicAttackItem("Fireball", 35, 2);
+            BasicAttackItem sword = new BasicAttackItem("Sword", 20, 1);
+            BasicAttackItem axe = new BasicAttackItem("Axe", 25, 1);
 
-            // Composite weapon for warrior
-            CompositeAttackItem comboWeapon = new("Combo Weapon", true, true);
-            comboWeapon.AddComponent(sword);
-            comboWeapon.AddComponent(axe);
-
-            // Add to world
+            // Add items to world
             world.AddObject(fireball);
             world.AddObject(sword);
             world.AddObject(axe);
 
-            // Mage loots boosted fireball
-            mage.Loot(boostedFireball);
+            // Looting phase
+            mage.Loot(fireball);
+            warrior.Loot(axe);
 
-            // Warrior loots composite weapon
-            warrior.Loot(comboWeapon);
+            Console.WriteLine();
 
-            // Combat simulation
-            Trace.WriteLine("\n--- Combat Begins ---");
+            // Set fireball strategy for mage
+            mage.SetAttackStrategy(new FireballAttackStrategy());
 
-            int mageHit = mage.Hit();
-            warrior.ReceiveHit(mageHit);
+            // Show weak and strong creatures
+            Console.WriteLine("Weak Creatures:");
+            foreach (var c in world.GetCreaturesByStrength(false, 100))
+                Console.WriteLine($"- {c.Name} ({c.HitPoints} HP)");
 
-            int warriorHit = warrior.Hit();
-            mage.ReceiveHit(warriorHit);
+            Console.WriteLine("\nStrong Creatures:");
+            foreach (var c in world.GetCreaturesByStrength(true, 100))
+                Console.WriteLine($"- {c.Name} ({c.HitPoints} HP)");
 
-            Trace.WriteLine("--- Combat Ends ---\n");
+            Console.WriteLine("\n--- Combat Begins ---");
 
-            Console.WriteLine("Simulation completed. Check logs for trace output.");
+            Random rand = new Random();
+            int round = 1;
+
+            while (mage.HitPoints > 0 && warrior.HitPoints > 0)
+            {
+                Console.WriteLine($"\n--- Round {round} ---");
+
+                bool mageFirst = rand.Next(2) == 0;
+
+                if (mageFirst)
+                {
+                    int mageDamage = mage.PerformAttack();
+                    warrior.ReceiveHit(mageDamage);
+                    if (warrior.HitPoints <= 0) break;
+
+                    int warriorDamage = warrior.PerformAttack();
+                    mage.ReceiveHit(warriorDamage);
+                }
+                else
+                {
+                    int warriorDamage = warrior.PerformAttack();
+                    mage.ReceiveHit(warriorDamage);
+                    if (mage.HitPoints <= 0) break;
+
+                    int mageDamage = mage.PerformAttack();
+                    warrior.ReceiveHit(mageDamage);
+                }
+
+                round++;
+            }
+
+            Console.WriteLine("\n--- Combat Ends ---");
+            if (mage.HitPoints > 0)
+                Console.WriteLine($"{mage.Name} wins with {mage.HitPoints} HP remaining!");
+            else
+                Console.WriteLine($"{warrior.Name} wins with {warrior.HitPoints} HP remaining!");
+
+            // Clean up
+            writer.Close();
+        }
+    }
+
+    public class MultiTextWriter : TextWriter
+    {
+        private readonly TextWriter _console;
+        private readonly TextWriter _file;
+
+        public MultiTextWriter(TextWriter console, TextWriter file)
+        {
+            _console = console;
+            _file = file;
+        }
+
+        public override Encoding Encoding => Encoding.UTF8;
+
+        public override void WriteLine(string value)
+        {
+            _console.WriteLine(value);
+            _file.WriteLine(value);
+        }
+
+        public override void Write(string value)
+        {
+            _console.Write(value);
+            _file.Write(value);
         }
     }
 }

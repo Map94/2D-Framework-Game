@@ -6,10 +6,9 @@ namespace _2D_Framework_Game.Objects.SubCreature
 {
     public class Mage : Creature
     {
-        public Mage(string name, int hitPoints, int x, int y, int inventoryCapacity)
+        public Mage(string name, int x, int y, int hitPoints, int inventoryCapacity)
             : base(name, hitPoints, x, y, inventoryCapacity)
         {
-            AttackStrategy = new FireballAttackStrategy();
         }
     }
 }

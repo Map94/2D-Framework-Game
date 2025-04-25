@@ -1,78 +1,56 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using _2D_Framework_Game.Objects.Creatures;
+using System;
 using System.Linq;
-using _2D_Framework_Game.Objects.Creatures;
-using _2D_Framework_Game.Objects;
+using System.Collections.Generic;
+using System.Diagnostics;
 
-namespace _2D_Framework_Game.Objects.World
+namespace _2D_Framework_Game.Objects
 {
     public class World
     {
-        public List<Creature> Creatures { get; set; }
-        public List<WorldObject> Objects { get; set; } // Add support for WorldObjects (like weapons, shields)
+        private List<Creature> _creatures = new();
+        private List<WorldObject> _objects = new();
+        private int _width;
+        private int _height;
 
-        public World()
+        public World(int width, int height)
         {
-            Creatures = new List<Creature>();
-            Objects = new List<WorldObject>(); // Initialize the list of WorldObjects
+            _width = width;
+            _height = height;
         }
 
-        // Add creatures to the world
         public void AddCreature(Creature creature)
         {
-            if (creature != null)
-            {
-                Creatures.Add(creature);
-            }
-            else
-            {
-                Console.WriteLine("Error: Cannot add null creature.");
-            }
+            _creatures.Add(creature);
+            string msg = $"{creature.Name} spawned at ({creature.X}, {creature.Y}) with {creature.HitPoints} HP.";
+            Trace.WriteLine(msg);
+            Console.WriteLine(msg);
         }
 
-        // Add objects to the world (e.g., weapons, shields)
         public void AddObject(WorldObject obj)
         {
-            if (obj != null)
-            {
-                Objects.Add(obj);
-            }
-            else
-            {
-                Console.WriteLine("Error: Cannot add null object.");
-            }
+            _objects.Add(obj);
         }
 
-        // Show weak creatures (HP < 50)
         public void ShowWeakCreatures()
         {
-            var weakCreatures = Creatures.Where(c => c.HitPoints < 50).ToList();
-            Console.WriteLine("Weak Creatures (HP < 50):");
-            foreach (var creature in weakCreatures)
-            {
-                Console.WriteLine($"{creature.Name} has {creature.HitPoints} HP.");
-            }
+            Console.WriteLine("\nWeak Creatures:");
+            foreach (var creature in GetCreaturesByStrength(false, 100))
+                Console.WriteLine($"- {creature.Name} ({creature.HitPoints} HP)");
         }
 
-        // Show strong creatures (HP > 100)
         public void ShowStrongCreatures()
         {
-            var strongCreatures = Creatures.Where(c => c.HitPoints > 100).ToList();
-            Console.WriteLine("Strong Creatures (HP > 100):");
-            foreach (var creature in strongCreatures)
-            {
-                Console.WriteLine($"{creature.Name} has {creature.HitPoints} HP.");
-            }
+            Console.WriteLine("\nStrong Creatures:");
+            foreach (var creature in GetCreaturesByStrength(true, 100))
+                Console.WriteLine($"- {creature.Name} ({creature.HitPoints} HP)");
         }
 
-        // Show all objects in the world
-        public void ShowAllObjects()
+        public IEnumerable<Creature> GetCreaturesByStrength(bool isStrong, int strengthThreshold)
         {
-            Console.WriteLine("Objects in the World:");
-            foreach (var obj in Objects)
-            {
-                Console.WriteLine($"{obj.Name} - {obj.Description}");
-            }
+            return isStrong
+                ? _creatures.Where(c => c.HitPoints > strengthThreshold)
+                : _creatures.Where(c => c.HitPoints <= strengthThreshold);
         }
     }
 }

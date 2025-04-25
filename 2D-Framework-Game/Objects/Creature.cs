@@ -1,4 +1,5 @@
-﻿using System;
+﻿// Creature.cs
+using System;
 using System.Collections.Generic;
 using _2D_Framework_Game.Interfaces;
 using System.Diagnostics;
@@ -27,10 +28,7 @@ namespace _2D_Framework_Game.Objects.Creatures
             X = x;
             Y = y;
             Inventory = new ItemInventory(inventoryCapacity);
-
-  
         }
-
 
         public void RegisterObserver(IObserver observer)
         {
@@ -53,12 +51,16 @@ namespace _2D_Framework_Game.Objects.Creatures
         public virtual void ReceiveHit(int hit)
         {
             HitPoints -= hit;
-            Trace.WriteLine($"{Name} received {hit} damage, remaining HP: {HitPoints}");
+            string msg = $"{Name} received {hit} damage, remaining HP: {HitPoints}";
+            Trace.WriteLine(msg);
+            Console.WriteLine(msg);
             NotifyObservers($"{Name} was hit and lost {hit} HP.");
 
             if (HitPoints <= 0)
             {
-                Trace.WriteLine($"{Name} has died.");
+                string deathMsg = $"{Name} has died.";
+                Trace.WriteLine(deathMsg);
+                Console.WriteLine(deathMsg);
             }
         }
 
@@ -66,17 +68,48 @@ namespace _2D_Framework_Game.Objects.Creatures
         {
             if (Inventory.AddItem(obj))
             {
-                Trace.WriteLine($"{Name} looted {obj.Name}");
+                string msg = $"{Name} looted {obj.Name}.";
+                Trace.WriteLine(msg);
+                Console.WriteLine(msg);
             }
             else
             {
-                Trace.WriteLine($"{Name} could not loot {obj.Name} because the inventory is full.");
+                string msg = $"{Name} could not loot {obj.Name} because the inventory is full.";
+                Trace.WriteLine(msg);
+                Console.WriteLine(msg);
             }
         }
 
         public virtual void OnNotified(string message)
         {
             Trace.WriteLine($"{Name} received notification: {message}");
+        }
+
+        public void SetAttackStrategy(IAttackStrategy strategy)
+        {
+            AttackStrategy = strategy;
+            string msg = $"{Name} changed attack strategy to {strategy.GetType().Name}";
+            Trace.WriteLine(msg);
+            Console.WriteLine(msg);
+        }
+
+        public int PerformAttack()
+        {
+            var attackComponents = new List<IAttackComponent>();
+
+            foreach (var item in Inventory.GetItems())
+            {
+                if (item is IAttackComponent attackItem)
+                {
+                    attackComponents.Add(attackItem);
+                }
+            }
+
+            int totalDamage = AttackStrategy.ExecuteAttack(attackComponents);
+            string msg = $"{Name} performed an attack dealing {totalDamage} damage.";
+            Trace.WriteLine(msg);
+            Console.WriteLine(msg);
+            return totalDamage;
         }
     }
 }
